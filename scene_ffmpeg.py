@@ -11,6 +11,6 @@ out, _ = (
     .input(video_path)
     .filter('select', 'gte(n,{})'.format(0.3),metadata='print:file=time.txt')
     .output('img%03d.png', vframes=1, format='image2', vcodec='mjpeg')
-    .view(filename='filter_graph')
+    # .view(filename='filter_graph')
     .run(capture_stdout=True)
 )
