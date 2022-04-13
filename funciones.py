@@ -92,18 +92,9 @@ def find_scenes(args):
 
 
 def write_csv(args,scene_list, scene_manager):
-    video_path = args.video_path
-    
-    # FOLDER 
-    isExist = os.path.exists("csv/")
-    if not isExist:
-  
-        # Create a new directory because it does not exist 
-        os.makedirs("csv/")
-        print("The new directory is created!")
 
-    ### Obtener imagenes por escena
-    f = open("csv/%s.DATOS POR ESCENA.csv"% os.path.basename(video_path), "w")
+    ### guardar csv
+    f = open(f"{args.output}/{args.output}.DATOS POR ESCENA.csv", "w")
     write_scene_list(f, scene_list, include_cut_list=False, cut_list=scene_manager.get_cut_list())
     f.close()
 
@@ -111,6 +102,7 @@ def write_csv(args,scene_list, scene_manager):
 
 def simple_find_scenes(args):
     video_path = args.video_path
+    output = args.output
     ## type: (str) -> List[Tuple[FrameTimecode, FrameTimecode]]
     video_manager = VideoManager([video_path])
     stats_manager = StatsManager() # util para reutilizar los datos y acelerar procesos
@@ -147,7 +139,7 @@ def simple_find_scenes(args):
             frame_margin=1, 
             image_extension='jpg', 
             encoder_param=95, 
-            image_name_template='scene/$VIDEO_NAME/$VIDEO_NAME-Scene-$SCENE_NUMBER-$IMAGE_NUMBER',
+            image_name_template=f'{output}/high_res/$VIDEO_NAME-Scene-$SCENE_NUMBER-$IMAGE_NUMBER',
             output_dir=None,
             downscale_factor=4,
             show_progress=False,
@@ -162,7 +154,7 @@ def simple_find_scenes(args):
             frame_margin=1, 
             image_extension='jpg', 
             encoder_param=95, 
-            image_name_template='csv/frame/$VIDEO_NAME/$VIDEO_NAME-Scene-$SCENE_NUMBER-$IMAGE_NUMBER',
+            image_name_template=f'{output}/html_img/$VIDEO_NAME-Scene-$SCENE_NUMBER-$IMAGE_NUMBER',
             output_dir=None,
             downscale_factor=4,
             show_progress=False,
@@ -255,6 +247,7 @@ def write_scene_list_html(output_html_filename, scene_list, cut_list=None, css=N
 
         if image_filenames:
             for image in image_filenames[i]:
+                print(image)
                 row.add_cell(SimpleTableCell(SimpleTableImage(
                     image, width=image_width, height=image_height)))
         # row de prediccion

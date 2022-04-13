@@ -27,7 +27,6 @@ print("GPU is", "available" if tf.config.list_physical_devices('GPU') else "NOT 
 
 def model_predict(args,MODELS,folder_path,pred_num=1):
     
-    path = os.listdir(folder_path)
     # initialize the input image shape (224x224 pixels) along with
     # the pre-processing function (this might need to be changed
     # based on which model we use to classify our image)
@@ -51,11 +50,10 @@ def model_predict(args,MODELS,folder_path,pred_num=1):
     model = Network(weights="imagenet")
 
     # bucle para escenas
-
-    path = os.listdir(folder_path)
+    path = os.listdir(f"{args.output}/high_res")
     predictions = []
     for img_path in path:
-        img = os.path.join(folder_path,img_path)
+        img = os.path.join(f"{args.output}/high_res",img_path)
         # load the input image using the Keras helper utility while ensuring
         # the image is resized to `inputShape`, the required input dimensions
         # for the ImageNet pre-trained network

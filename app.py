@@ -12,11 +12,17 @@ from tensorflow.keras.applications import VGG19
 
 # ARGUMENTOS
 parser=argparse.ArgumentParser()
-parser.add_argument('--video_path','-v', help='path to the video', type=str)
-parser.add_argument('--csv', help='csv name', type=bool, default=True)
-parser.add_argument('--images',"-im", help='save images', type=bool, default=False)
-parser.add_argument("--model","-m", type=str, default="vgg16",
+parser.add_argument('--video_path','-v', type=str, required=True,
+    help='path to the video')
+parser.add_argument('--csv','-csv',      type=bool, default=False,
+    help='csv name')
+parser.add_argument('--images',"-im",    type=bool, default=False, 
+    help='save images')
+parser.add_argument("--model","-m",      type=str, default="vgg16",
 	help="name of pre-trained network to use")
+parser.add_argument('--output', '-out',  type=str, default=None,
+    help="Folder where images and html will be stored")
+
 args=parser.parse_args()
 
 
@@ -37,6 +43,11 @@ MODELS = {
 if not os.path.exists(args.video_path) or  os.path.exists(args.video_path)==None:
     raise ValueError("video path not valid")
 
+# se guardara en la carpeta con el nombre del video
+if not args.output:
+    args.output = video_name
+
+
 # esnure a valid model name was supplied via command line argument
 if args.model not in MODELS.keys():
 	raise AssertionError("The --model command line argument should "
@@ -46,21 +57,22 @@ if args.model not in MODELS.keys():
 scene_list, scene_manager = funciones.simple_find_scenes(args) # variables para guardar los datos
 # prediction = funciones_tensorflow.inception_predict(f"scene/{video_name}",pred_num=3)
 
-prediction = funciones_tensorflow.model_predict(args,MODELS,f"scene/{video_name}",pred_num=1)
+prediction = funciones_tensorflow.model_predict(args,MODELS,f"{video_name}/high_res",pred_num=1)
 
 # DICCIONARIOS
-img_list = os.listdir(f"csv/frame/{video_name}")
-for i in range(len(img_list)):
-    img_list[i] = [os.path.join(f"csv/frame/{video_name}/",img_list[i])]
-img_dic = dict(zip(np.arange(0,len(img_list)), img_list))
+img_list = os.listdir(f"{args.output}/html_img")
 
+for i in range(len(img_list)):
+    img_list[i] = [os.path.join(f"html_img/",img_list[i])]
+img_dic = dict(zip(np.arange(0,len(img_list)), img_list))
+print(img_dic)
 prediction_dic = dict(zip(np.arange(0,len(prediction)), prediction))
 
 # CSS 
 funciones.write_csv(args,scene_list, scene_manager)
 # HTML
 funciones.write_scene_list_html(
-                                output_html_filename=f"{video_name}.html",
+                                output_html_filename=f"{args.output}/{video_name}.html",
                                 scene_list=scene_list,
                                 cut_list=scene_manager.get_cut_list(),
                                 image_filenames=img_dic,
@@ -71,6 +83,6 @@ funciones.write_scene_list_html(
 
 if args.images == False:
     try:
-        shutil.rmtree("scene/" + video_name)
+        shutil.rmtree(os.path.join(args.output,"high_res"))
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
