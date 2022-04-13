@@ -18,6 +18,8 @@ parser.add_argument('--csv','-csv',      type=bool, default=False,
     help='csv name')
 parser.add_argument('--images',"-im",    type=bool, default=False, 
     help='save images')
+parser.add_argument('--prediction_number',"-pn",    type=int, default=1, 
+    help='number of predictions saved from de model')
 parser.add_argument("--model","-m",      type=str, default="vgg16",
 	help="name of pre-trained network to use")
 parser.add_argument('--output', '-out',  type=str, default=None,
@@ -57,7 +59,7 @@ if args.model not in MODELS.keys():
 scene_list, scene_manager = funciones.simple_find_scenes(args) # variables para guardar los datos
 # prediction = funciones_tensorflow.inception_predict(f"scene/{video_name}",pred_num=3)
 
-prediction = funciones_tensorflow.model_predict(args,MODELS,f"{video_name}/high_res",pred_num=1)
+prediction = funciones_tensorflow.model_predict(args,MODELS,f"{video_name}/high_res",pred_num=args.prediction_number)
 
 # DICCIONARIOS
 img_list = os.listdir(f"{args.output}/html_img")
@@ -65,7 +67,6 @@ img_list = os.listdir(f"{args.output}/html_img")
 for i in range(len(img_list)):
     img_list[i] = [os.path.join(f"html_img/",img_list[i])]
 img_dic = dict(zip(np.arange(0,len(img_list)), img_list))
-print(img_dic)
 prediction_dic = dict(zip(np.arange(0,len(prediction)), prediction))
 
 # CSS 

@@ -210,6 +210,8 @@ def write_scene_list_html(output_html_filename, scene_list, cut_list=None, css=N
             color:#000000;
         }
         table.mytable td {
+            white-space: pre-line;
+            text-align: center;
             border-width: 1px;
             padding: 8px;
             border-style: solid;
@@ -247,7 +249,6 @@ def write_scene_list_html(output_html_filename, scene_list, cut_list=None, css=N
 
         if image_filenames:
             for image in image_filenames[i]:
-                print(image)
                 row.add_cell(SimpleTableCell(SimpleTableImage(
                     image, width=image_width, height=image_height)))
         # row de prediccion
@@ -255,8 +256,8 @@ def write_scene_list_html(output_html_filename, scene_list, cut_list=None, css=N
             pred_text=""
             prob_text=""
             for pred in prediction[i]:
-               pred_text +=pred[1] +"\n"
-               prob_text +=str(pred[2]) +"\n"
+               pred_text +=f"\n{pred[1]}" 
+               prob_text +=f"\n{pred[2]:.3f}"
             row.add_cell(SimpleTableCell(pred_text))
             row.add_cell(SimpleTableCell(prob_text))
 
